@@ -18,6 +18,11 @@ module.exports = {
   /* Authenticaition */
   signUpUser: userController.signUpUser,
 
+  // get historys
+  history: userController.getHist,
+  setOutput: userController.setHist,
+  delOutput: userController.delHist,
+
   /* Kai AI */
   chat: kaiAIController.chat,
   tool: kaiAIController.tool,
