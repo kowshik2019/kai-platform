@@ -1,16 +1,21 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import {
+  Add as AddIcon,
   ArrowDownwardOutlined,
   InfoOutlined,
+  Minimize as MinimizeIcon,
   Settings,
 } from '@mui/icons-material';
 import {
+  Box,
   Button,
+  Fab,
   Fade,
   Grid,
   IconButton,
   InputAdornment,
+  Paper,
   TextField,
   Typography,
 } from '@mui/material';
@@ -69,6 +74,8 @@ const ChatInterface = () => {
   const currentSession = chat;
   const chatMessages = currentSession?.messages;
   const showNewMessageIndicator = !fullyScrolled && streamingDone;
+
+  const [showChatHistory, setShowChatHistory] = useState(false);
 
   const startConversation = async (message) => {
     dispatch(
@@ -253,6 +260,8 @@ const ChatInterface = () => {
     );
   };
 
+  const handleShowChatHistory = () => setShowChatHistory(!showChatHistory);
+
   const renderMoreChat = () => {
     if (!more) return null;
     return (
@@ -356,14 +365,76 @@ const ChatInterface = () => {
     return null;
   };
 
+  const renderChatHistoryButton = () => {
+    return (
+      <div style={{ display: showChatHistory ? 'none' : 'block' }}>
+        <Fab
+          aria-label="open chat history"
+          size="medium"
+          {...styles.chatHistory.chatHistoryButtonFabProps}
+          onClick={handleShowChatHistory}
+        >
+          <AddIcon {...styles.chatHistory.chatHistoryButtonIconProps} />
+        </Fab>
+      </div>
+    );
+  };
+
+  const renderChatHistory = () => {
+    if (showChatHistory)
+      return (
+        <Paper {...styles.chatHistory.chatHistoryContainerProps}>
+          <div {...styles.chatHistory.chatHistoryTitleContainerProps}>
+            <Typography {...styles.chatHistory.chatHistoryTitleProps}>
+              Chat History
+            </Typography>
+            <IconButton
+              {...styles.chatHistory.closeButtonProps}
+              onClick={handleShowChatHistory}
+            >
+              <MinimizeIcon />
+            </IconButton>
+          </div>
+          <div {...styles.chatHistory.chatHistoryContentContainerProps}>
+            <Typography
+              variant="body2"
+              {...styles.chatHistory.chatHistoryContentProps}
+            >
+              Today
+            </Typography>
+            <Typography
+              variant="body2"
+              {...styles.chatHistory.chatHistoryContentProps}
+            >
+              Yesterday
+            </Typography>
+          </div>
+        </Paper>
+      );
+    return null;
+  };
+
   return (
-    <Grid {...styles.mainGridProps}>
-      {renderMoreChat()}
-      {renderCenterChatContent()}
-      {renderCenterChatContentNoMessages()}
-      {renderNewMessageIndicator()}
-      {renderBottomChatContent()}
-    </Grid>
+    <Box display="flex" height="970px" width="970px">
+      <Box flex={showChatHistory ? '1' : '1'} overflow="hidden">
+        <Grid
+          container
+          style={{ height: '100%' }}
+          sx={{
+            transition: 'all 0.3s ease',
+            marginRight: showChatHistory ? '320px' : '0',
+          }}
+        >
+          {renderMoreChat()}
+          {renderCenterChatContent()}
+          {renderCenterChatContentNoMessages()}
+          {renderNewMessageIndicator()}
+          {renderBottomChatContent()}
+        </Grid>
+      </Box>
+      {renderChatHistoryButton()}
+      {showChatHistory && <Box flex="0 0 320px">{renderChatHistory()}</Box>}
+    </Box>
   );
 };
 
